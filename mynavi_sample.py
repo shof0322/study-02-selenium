@@ -40,27 +40,18 @@ def main():
     # 検索ボタンクリック
     driver.find_element_by_class_name("topSearch__button").click()
     
-    # ページ終了まで繰り返し取得
-    while True:
-        # 検索結果の一番上の会社名を取得
-        name_list=driver.find_elements_by_class_name("cassetteRecruit__name")
-        copy_list=driver.find_elements_by_class_name("cassetteRecruit__copy")
-        status_list=driver.find_elements_by_class_name("labelEmploymentStatus")
-        # 1ページ分繰り返し
-        print("{},{},{}".format(len(copy_list),len(status_list),len(name_list)))
-        for name,copy,status in zip(name_list,copy_list,status_list):
-            print(name.text)
-            print(copy.text)
-            print(status.text)
 
-        # 次のページボタンがあればクリックなければ終了
-        next_page=driver.find_elements_by_class_name("iconFont--arrowLeft")
-        if len(next_page)>=1:
-            next_page_link=next_page[0].get_attribute("href")
-            driver.get(next_page_link)
-        else:
-            print("最終ページです。終了します。")
-            break
+    # 検索結果の一番上の会社名を取得
+    name_list=driver.find_elements_by_class_name("cassetteRecruit__name")
+    copy_list=driver.find_elements_by_class_name("cassetteRecruit__copy")
+    status_list=driver.find_elements_by_class_name("labelEmploymentStatus")
+    # 1ページ分繰り返し
+    print("{},{},{}".format(len(copy_list),len(status_list),len(name_list)))
+    for name,copy,status in zip(name_list,copy_list,status_list):
+        print(name.text)
+        print(copy.text)
+        print(status.text)
+
 
 ### 直接起動された場合はmain()を起動(モジュールとして呼び出された場合は起動しないようにするため)
 if __name__ == "__main__":
