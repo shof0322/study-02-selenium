@@ -1,6 +1,7 @@
 import os
 from selenium.webdriver import Chrome, ChromeOptions
 import time
+from selenium.common.exceptions import NoSuchElementException
 
 ### Chromeを起動する関数
 def set_driver(driver_path,headless_flg):
@@ -19,13 +20,13 @@ def set_driver(driver_path,headless_flg):
     options.add_argument('--incognito')          # シークレットモードの設定を付与
 
     # ChromeのWebDriverオブジェクトを作成する。
-    return Chrome(executable_path=os.getcwd() + "\\" + driver_path,options=options)
+    return Chrome(executable_path=os.getcwd() + "/" + driver_path,options=options)
 
 ### main処理
 def main():
     search_keyword="高収入"
     # driverを起動
-    driver=set_driver("chromedriver.exe",False)
+    driver=set_driver("chromedriver",False)
     # Webサイトを開く
     driver.get("https://tenshoku.mynavi.jp/")
     time.sleep(5)
@@ -40,18 +41,25 @@ def main():
     # 検索ボタンクリック
     driver.find_element_by_class_name("topSearch__button").click()
     
+    try:
+        while driver.find_element_by_class_name("iconFont--arrowLeft"):
+            # 検索結果の一番上の会社名を取得
+            name_list=driver.find_elements_by_class_name("cassetteRecruit__name")
+            copy_list=driver.find_elements_by_class_name("cassetteRecruit__copy")
+            status_list=driver.find_elements_by_class_name("labelEmploymentStatus")
+            # 1ページ分繰り返し
+            print("{},{},{}".format(len(copy_list),len(status_list),len(name_list)))
+            for name,copy,status in zip(name_list,copy_list,status_list):
+                print(name.text)
+                print(copy.text)
+                print(status.text)
 
-    # 検索結果の一番上の会社名を取得
-    name_list=driver.find_elements_by_class_name("cassetteRecruit__name")
-    copy_list=driver.find_elements_by_class_name("cassetteRecruit__copy")
-    status_list=driver.find_elements_by_class_name("labelEmploymentStatus")
-    # 1ページ分繰り返し
-    print("{},{},{}".format(len(copy_list),len(status_list),len(name_list)))
-    for name,copy,status in zip(name_list,copy_list,status_list):
-        print(name.text)
-        print(copy.text)
-        print(status.text)
-
+            # 次ページの→を指定してクリックする
+            element = driver.find_element_by_class_name("iconFont--arrowLeft")
+            element.click()
+            time.sleep(2)
+    except NoSuchElementException:
+        driver.quit()
 
 ### 直接起動された場合はmain()を起動(モジュールとして呼び出された場合は起動しないようにするため)
 if __name__ == "__main__":
