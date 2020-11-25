@@ -2,6 +2,7 @@ import os
 from selenium.webdriver import Chrome, ChromeOptions
 import time
 from selenium.common.exceptions import NoSuchElementException
+import pandas as pd
 
 ### Chromeを起動する関数
 def set_driver(driver_path,headless_flg):
@@ -26,7 +27,6 @@ def set_driver(driver_path,headless_flg):
 def main():
     print('検索ワードを入力してください。')
     search_keyword = input('>> ')
-    print(search_keyword)
     # driverを起動
     driver=set_driver("chromedriver",False)
     # Webサイトを開く
@@ -43,18 +43,24 @@ def main():
     # 検索ボタンクリック
     driver.find_element_by_class_name("topSearch__button").click()
     
+    name_list = []
+    copy_list = []
+    status_list = []
+
     try:
         while driver.find_element_by_class_name("iconFont--arrowLeft"):
             # 検索結果の一番上の会社名を取得
-            name_list=driver.find_elements_by_class_name("cassetteRecruit__name")
-            copy_list=driver.find_elements_by_class_name("cassetteRecruit__copy")
-            status_list=driver.find_elements_by_class_name("labelEmploymentStatus")
+            csv_name_list=driver.find_elements_by_class_name("cassetteRecruit__name")
+            csv_copy_list=driver.find_elements_by_class_name("cassetteRecruit__copy")
+            csv_status_list=driver.find_elements_by_class_name("labelEmploymentStatus")
             # 1ページ分繰り返し
-            print("{},{},{}".format(len(copy_list),len(status_list),len(name_list)))
-            for name,copy,status in zip(name_list,copy_list,status_list):
-                print(name.text)
-                print(copy.text)
-                print(status.text)
+            print("{},{},{}".format(len(csv_copy_list),len(csv_status_list),len(csv_name_list)))
+            for name,copy,status in zip(csv_name_list,csv_copy_list,csv_status_list):
+                name_list.append(name.text)
+                copy_list.append(copy.text)
+                status_list.append(status.text)
+            df = pd.DataFrame({"名前":name_list,"キャッチコピー":copy_list,"ステータス":status_list})
+            df.to_csv('test001.csv', mode = 'a')
 
             # 次ページの→を指定してクリックする
             element = driver.find_element_by_class_name("iconFont--arrowLeft")
