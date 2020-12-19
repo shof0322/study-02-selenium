@@ -3,6 +3,31 @@ from selenium.webdriver import Chrome, ChromeOptions
 import time
 from selenium.common.exceptions import NoSuchElementException
 import pandas as pd
+import logging
+
+# ログの出力名を設定
+logger = logging.getLogger('LoggingTest')
+
+#ログレベルを指定
+logger.setLevel(20)
+ 
+#ログをコンソール出力するための設定
+sh = logging.StreamHandler()
+logger.addHandler(sh)
+
+# ログのファイル出力先を設定
+fh = logging.FileHandler('test.log')
+logger.addHandler(fh)
+
+# ログの出力形式の設定
+formatter = logging.Formatter('%(asctime)s:%(lineno)d:%(levelname)s:%(message)s')
+fh.setFormatter(formatter)
+sh.setFormatter(formatter)
+ 
+#それぞれのログレベルに応じた関数を呼び出す
+logger.info('info')
+logger.warning('warning')
+logger.error('test')
 
 ### Chromeを起動する関数
 def set_driver(driver_path,headless_flg):
